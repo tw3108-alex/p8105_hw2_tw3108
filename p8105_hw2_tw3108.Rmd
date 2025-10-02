@@ -54,25 +54,88 @@ final <- merged %>%
 ```{r,message=FALSE,warning=FALSE}
 library(readxl)
 library(dplyr)
+data <- "data/202409 Trash Wheel Collection Data.xlsx"
+
 mrtrash <- read_excel(
-  "data/202409 Trash Wheel Collection Data.xlsx",
+  data,
   sheet = "Mr. Trash Wheel",
-  skip = 1,            
-  range = readxl::cell_cols("A:M")        
+  skip  = 1,
+  range = readxl::cell_cols("A:M")
 ) %>%
-  filter(!is.na(Dumpster)) %>% 
+  filter(!is.na(Dumpster)) %>%
   rename(
-    weight_tons = `Weight (tons)`,
-    volume_cubic_yards = `Volume (cubic yards)`,
-    plastic_bottles = `Plastic Bottles`,
-    polystyrene = Polystyrene,
-    cigarette_butts = `Cigarette Butts`,
-    glass_bottles = `Glass Bottles`,
-    plastic_bags = `Plastic Bags`,
-    wrappers = Wrappers,
-    sports_balls = `Sports Balls`
+    weight_tons         = `Weight (tons)`,
+    volume_cubic_yards  = `Volume (cubic yards)`,
+    plastic_bottles     = `Plastic Bottles`,
+    polystyrene         = Polystyrene,
+    cigarette_butts     = `Cigarette Butts`,
+    glass_bottles       = `Glass Bottles`,
+    plastic_bags        = `Plastic Bags`,
+    wrappers            = Wrappers,
+    sports_balls        = `Sports Balls`
   ) %>%
   mutate(
-    sports_balls = as.integer(round(as.numeric(sports_balls)))
+    Year           = as.integer(Year),
+    Month          = as.character(Month),
+    Date           = as.Date(Date),
+    weight_tons    = as.numeric(weight_tons),
+    cigarette_butts= as.numeric(cigarette_butts),
+    sports_balls   = as.integer(round(as.numeric(sports_balls))),
+    member         = "Mr.Trash Wheel"
   )
+
+proftrash <- read_excel(
+  data,
+  sheet = "Professor Trash Wheel",
+  skip  = 1,
+  range = readxl::cell_cols("A:M")
+) %>%
+  filter(!is.na(Dumpster)) %>%
+  rename(
+    weight_tons         = `Weight (tons)`,
+    volume_cubic_yards  = `Volume (cubic yards)`,
+    plastic_bottles     = `Plastic Bottles`,
+    polystyrene         = Polystyrene,
+    cigarette_butts     = `Cigarette Butts`,
+    glass_bottles       = `Glass Bottles`,
+    plastic_bags        = `Plastic Bags`,
+    wrappers            = Wrappers
+  ) %>%
+  mutate(
+    Year           = as.integer(Year),
+    Month          = as.character(Month),
+    Date           = as.Date(Date),
+    weight_tons    = as.numeric(weight_tons),
+    cigarette_butts= as.numeric(cigarette_butts),
+    sports_balls   = NA_integer_, 
+    member         = "Professor Trash Wheel"
+  )
+
+gwynnda <- read_excel(
+  data,
+  sheet = "Gwynnda Trash Wheel",
+  skip  = 1,
+  range = readxl::cell_cols("A:L")
+) %>%
+  filter(!is.na(Dumpster)) %>%
+  rename(
+    weight_tons         = `Weight (tons)`,
+    volume_cubic_yards  = `Volume (cubic yards)`,
+    plastic_bottles     = `Plastic Bottles`,
+    polystyrene         = Polystyrene,
+    cigarette_butts     = `Cigarette Butts`,
+    plastic_bags        = `Plastic Bags`,
+    wrappers            = Wrappers
+  ) %>%
+  mutate(
+    Year           = as.integer(Year),
+    Month          = tolower(as.character(Month)),
+    Date           = as.Date(Date),
+    weight_tons    = as.numeric(weight_tons),
+    cigarette_butts= as.numeric(cigarette_butts),
+    sports_balls   = NA_integer_,   
+    member         = "Gwynnda"
+  )
+
+trashwheel <- bind_rows(mrtrash, proftrash, gwynnda)
 ```
