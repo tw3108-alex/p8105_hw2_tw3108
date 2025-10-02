@@ -139,3 +139,24 @@ gwynnda <- read_excel(
 
 trashwheel <- bind_rows(mrtrash, proftrash, gwynnda)
 ```
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+zori <- readr::read_csv("data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv")
+newzori <- zori %>%
+  rename(zip = RegionName) %>%
+  pivot_longer(
+    cols = -(1:9),
+    names_to  = "date",
+    values_to = "zori"
+  ) %>%
+  tidyr::separate(
+    date, into = c("year","month","day"),
+    sep = "-", convert = TRUE
+  ) %>%
+  mutate(
+    date = as.Date(year, month, day),
+  ) %>%
+  select(zip, date, year, month, zori) %>%
+  arrange(zip, date)
+```
