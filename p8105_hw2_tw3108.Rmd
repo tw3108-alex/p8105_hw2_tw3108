@@ -1,0 +1,26 @@
+---
+title: "p8105_hw2_tw3108"
+author: "Tao Wu"
+date: "2025-10-01"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+pols <- read_csv("data/pols-month.csv")
+snp  <- read_csv("data/snp.csv")
+unemp <- read_csv("data/unemployment.csv")
+newpols <- pols %>%
+  separate(mon, into = c("year", "month", "day"), sep = "-") %>%
+  mutate(
+    month = as.integer(month),
+    month = month.name[month],
+    president = if_else(prez_gop == 1, "gop", "dem")
+  ) %>%
+  select(-prez_gop, -prez_dem, -day)
+```
+
