@@ -22,5 +22,25 @@ newpols <- pols %>%
     president = if_else(prez_gop == 1, "gop", "dem")
   ) %>%
   select(-prez_gop, -prez_dem, -day)
+newsnp <- snp %>%
+ mutate(date = as.Date(date, format = "%m/%d/%y"),
+    year = as.integer(format(date, "%Y")),
+    month = as.integer(format(date, "%m")),
+    month = month.name[month]
+  ) %>%
+  select(year, month, close) %>%    
+  arrange(year, month)
+newunemp <- unemp %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "rate"
+  ) %>%
+  mutate(
+    year  = as.integer(Year),
+    month = month.name[match(month,month.abb)]
+  ) %>%
+  select(year, month, rate) %>%
+  arrange(year,month)
 ```
 
