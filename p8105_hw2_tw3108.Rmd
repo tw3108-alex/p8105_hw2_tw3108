@@ -159,4 +159,11 @@ newzori <- zori %>%
   ) %>%
   select(zip, date, year, month, zori) %>%
   arrange(zip, date)
+zip <- read_csv("data/Zip Codes.csv") %>%
+  rename(zip = ZipCode, county= County,neighborhood = Neighborhood
+  )
+tidy <- newzori %>%
+  left_join(zip, by = "zip") %>%
+  relocate(zip, county, neighborhood, date, year, month, zori) %>%
+  arrange(zip, date)
 ```
