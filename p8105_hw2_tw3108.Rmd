@@ -42,5 +42,37 @@ newunemp <- unemp %>%
   ) %>%
   select(year, month, rate) %>%
   arrange(year,month)
+newpols   <- newpols   %>% mutate(year = as.integer(year))
+newsnp    <- newsnp    %>% mutate(year = as.integer(year))
+newunemp  <- newunemp  %>% mutate(year = as.integer(year))
+merged <- newpols %>%
+  left_join(newsnp, by = c("year", "month"))
+final <- merged %>%
+  left_join(newunemp, by = c("year", "month"))
 ```
 
+```{r,message=FALSE,warning=FALSE}
+library(readxl)
+library(dplyr)
+mrtrash <- read_excel(
+  "data/202409 Trash Wheel Collection Data.xlsx",
+  sheet = "Mr. Trash Wheel",
+  skip = 1,            
+  range = readxl::cell_cols("A:M")        
+) %>%
+  filter(!is.na(Dumpster)) %>% 
+  rename(
+    weight_tons = `Weight (tons)`,
+    volume_cubic_yards = `Volume (cubic yards)`,
+    plastic_bottles = `Plastic Bottles`,
+    polystyrene = Polystyrene,
+    cigarette_butts = `Cigarette Butts`,
+    glass_bottles = `Glass Bottles`,
+    plastic_bags = `Plastic Bags`,
+    wrappers = Wrappers,
+    sports_balls = `Sports Balls`
+  ) %>%
+  mutate(
+    sports_balls = as.integer(round(as.numeric(sports_balls)))
+  )
+```
