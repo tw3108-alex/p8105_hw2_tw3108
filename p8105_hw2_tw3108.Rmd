@@ -178,10 +178,28 @@ tidy <- newzori %>%
   left_join(zip, by = "zip") %>%
   relocate(zip, county, neighborhood, date, year, month, zori) %>%
   arrange(zip, date)
-nrow(tidy)
- n_distinct(tidy$zip)
- n_distinct(tidy$neighborhood)
- range(tidy$date)
- ziponly <- zip %>%
-  anti_join(newzori %>% distinct(zip), by = "zip")
+ obs <- nrow(tidy)
+ zipnum <- n_distinct(tidy$zip)
+ neibor <- n_distinct(tidy$neighborhood)
+ range <- range(tidy$date)
+ziponly <- zip %>%
+  filter(!(zip %in% newzori$zip))
+head(ziponly, 10)
+nrow(ziponly)
+zori2020 <- tidy %>%
+  filter(year == 2020, month == 1) %>%
+  select(zip, zori2020 = zori)
+zori2021 <- tidy %>%
+  filter(year == 2021, month == 1) %>%
+  select(zip, zori2021 = zori)
+diff <- zori2020 %>%
+  inner_join(zori2021, by = "zip") %>%
+  mutate(diff = zori2021 - zori2020) %>%
+  left_join(distinct(tidy, zip, county, neighborhood), by = "zip") %>%
+  arrange(diff) %>%
+ head(n = 10)
+knitr::kable(
+  diff %>%
+    select(zip, county, neighborhood, zori2020, zori2021, diff),
+)
 ```
